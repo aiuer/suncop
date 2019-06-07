@@ -92,7 +92,7 @@ export default {
       return parseInt(offset)
     },
     moveCode (code, _this) {
-      var fn = { codeVluae : code }
+      var fn = { codeVluae: code }
       let box = document.querySelector('#code-box')
       let progress = box.querySelector('p')
       let codeInput = box.querySelector('.code-input')
@@ -103,7 +103,7 @@ export default {
       if (typeof document.ontouchstart === 'object') {
         boxEven = ['touchstart', 'touchmove', 'touchend']
       }
-      var goX, offsetLeft, deviation, evenWidth, endX
+      var goX, deviation, evenWidth, endX, offsetLeft
       function moveFn (e) {
         e.preventDefault()
         e = (boxEven['0'] === 'touchstart') ? e.touches[0] : e || window.event
@@ -147,11 +147,11 @@ export default {
       };
       evenBox.addEventListener(boxEven['0'], function (e) {
         e = (boxEven['0'] === 'touchstart') ? e.touches[0] : e || window.event
-        goX = e.clientX,
-        offsetLeft = getOffset(box, 'left'),
-        deviation = this.clientWidth,
-        evenWidth = box.clientWidth - deviation,
-        endX
+        var goX = e.clientX
+        var offsetLeft = getOffset(box, 'left')
+        var deviation = this.clientWidth
+        var evenWidth = box.clientWidth - deviation
+        var endX
         document.addEventListener(boxEven['1'], moveFn, false)
         document.addEventListener(boxEven['2'], removeFn, false)
       }, false)
