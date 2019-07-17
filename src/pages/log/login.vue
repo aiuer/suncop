@@ -10,7 +10,7 @@
     id="components-form-demo-normal-login"
     :form="form"
     class="login-form"
-    @submit="handleSubmit"
+    @submit="login()"
   >
     <a-form-item>
       <a-input
@@ -53,19 +53,9 @@
       </a-button>
     </a-form-item>
   </a-form>
-  <el-form-item label="验证">
-    <div class="form-inline-input">
-      <div class="code-box" id="code-box">
-        <input type="text" name="code" class="code-input" />
-        <p></p>
-        <span>>>></span>
-      </div>
-    </div>
-  </el-form-item>
 </div>
 </template>
 <script>
-import {mapActions} from 'vuex'
 export default {
   beforeCreate () {
     this.form = this.$form.createForm(this)
@@ -80,136 +70,8 @@ export default {
     }
   },
   methods: {
-    getOffset (box, direction) {
-      var setDirection = (direction === 'top') ? 'offsetTop' : 'offsetLeft'
-      var offset = box[setDirection]
-      var parentBox = box.offsetParent
-      while (parentBox) {
-        offset += parentBox[setDirection]
-        parentBox = parentBox.offsetParent
-      }
-      parentBox = null
-      return parseInt(offset)
-    },
-    moveCode (code, _this) {
-      var fn = { codeVluae: code }
-      let box = document.querySelector('#code-box')
-      let progress = box.querySelector('p')
-      let codeInput = box.querySelector('.code-input')
-      let evenBox = box.querySelector('span')
-      // 默认事件
-      var boxEven = ['mousedown', 'mousemove', 'mouseup']
-      // 改变手机端与pc事件类型
-      if (typeof document.ontouchstart === 'object') {
-        boxEven = ['touchstart', 'touchmove', 'touchend']
-      }
-      var goX, deviation, evenWidth, endX, offsetLeft
-      function moveFn (e) {
-        e.preventDefault()
-        e = (boxEven['0'] === 'touchstart') ? e.touches[0] : e || window.event
-        endX = e.clientX - goX
-        endX = (endX > 0) ? (endX > evenWidth) ? evenWidth : endX : 0
-        if (endX > evenWidth * 0.7) {
-          progress.innerText = '松开验证'
-          progress.style.backgroundColor = '#66CC66'
-        } else {
-          progress.innerText = ''
-          progress.style.backgroundColor = '#FFFF99'
-        }
-        progress.style.width = endX + deviation + 'px'
-        evenBox.style.left = endX + 'px'
-      }
-      function removeFn () {
-        document.removeEventListener(boxEven['2'], removeFn, false)
-        document.removeEventListener(boxEven['1'], moveFn, false)
-        if (endX > evenWidth * 0.7) {
-          progress.innerText = '验证成功'
-          progress.style.width = evenWidth + deviation + 'px'
-          evenBox.style.left = evenWidth + 'px'
-          codeInput.value = fn.codeVluae
-          evenBox.onmousedown = null
-          _this.ruleForm.verification = true
-        } else {
-          progress.style.width = '0px'
-          evenBox.style.left = '0px'
-        }
-      };
-      function getOffset (box, direction) {
-        var setDirection = (direction === 'top') ? 'offsetTop' : 'offsetLeft' 
-        var offset = box[setDirection]
-        var parentBox = box.offsetParent
-        while (parentBox) {
-          offset += parentBox[setDirection]
-          parentBox = parentBox.offsetParent
-        }
-        parentBox = null
-        return parseInt(offset)
-      };
-      evenBox.addEventListener(boxEven['0'], function (e) {
-        e = (boxEven['0'] === 'touchstart') ? e.touches[0] : e || window.event
-        var goX = e.clientX
-        var offsetLeft = getOffset(box, 'left')
-        var deviation = this.clientWidth
-        var evenWidth = box.clientWidth - deviation
-        var endX
-        document.addEventListener(boxEven['1'], moveFn, false)
-        document.addEventListener(boxEven['2'], removeFn, false)
-      }, false)
-      fn.setCode = function (code) {
-        if (code) {
-          fn.codeVluae = code
-        }
-      }
-      fn.getCode = function () {
-        return fn.codeVluae
-      }
-      fn.resetCode = function () {
-        evenBox.removeAttribute('style')
-        progress.removeAttribute('style')
-        codeInput.value = ''
-      }
-      return fn
-    },
-    mounted () {
-      // var _this = this
-      // window.addEventListener('load',function(){
-      // code是后台传入的验证字符串
-      let code = 'jsaidaisd656'
-      let codeFn = new this.moveCode(code, this)
-      // });
-    },
-    ...mapActions({add_Routes: 'add_Routes'}),
-    handleSubmit (e) {
-      e.preventDefault()
-      this.form.validateFields((err, values) => {
-        if (!err) {
-          console.log('Received values of form: ', values)
-          this.login()
-        }
-      })
-    },
     login () {
       this.loading = true
-      // this.$http.get('http://localhost:3008/user?citicreditid=' + this.citicreditid).then((res) => {
-      //   console.log(res.body)
-      //   var user = res.body[0]
-      //   console.log(user)
-      //   if (res) {
-      //     this.$http.get('http://localhost:3008/permit?id=' + user.identity).then((re) => {
-      //       // 将路由信息，用户信息存到sessionStorage里面
-      //       console.log(re.data[0].permit_list)
-      //       sessionStorage.setItem('menuData', JSON.stringify(re.data[0].permit_list))
-      //       sessionStorage.setItem('user', this.citicreditid)
-      //       this.$router.push('/user')
-      //       // 触发vuex里面增加的路由
-      //       // this.add_Routes(re.data[0].permit_list)
-      //     })
-      //   }
-      // }, (err) => {
-      //   console.log(err)
-      // })
-      // const { citicreditid, password } = this
-      // const params = qs.stringify({citicreditid, password})
       const sunCitizenmes = {
         citicreditid: this.citicreditid,
         password: this.password
